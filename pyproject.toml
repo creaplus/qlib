@@ -27,10 +27,9 @@ dependencies = [
   "pyyaml",
   "numpy",
   "pandas>=0.24",
-  # I encoutered an Error that the set_uri does not work when downloading artifacts in mlflow 3.1.1;
-  # But earlier versions of mlflow does not have this problem.
-  # But when I switch to 2.*.* version, another error occurs, which is even more strange...
-  "mlflow",
+  # creaplus fork：完整 mlflow 元数据写 pandas<3，与主项目 pandas>=3 / protobuf>=6 冲突；
+  # workflow 仅用 tracking client，mlflow-skinny 提供同名 `import mlflow` 且兼容 protobuf 6。
+  "mlflow-skinny>=2.22.0",
   "filelock>=3.16.0",
   "redis",
   "dill",
