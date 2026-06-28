@@ -29,7 +29,8 @@ dependencies = [
   "pandas>=0.24",
   # creaplus fork：完整 mlflow 元数据写 pandas<3，与主项目 pandas>=3 / protobuf>=6 冲突；
   # workflow 仅用 tracking client，mlflow-skinny 提供同名 `import mlflow` 且兼容 protobuf 6。
-  "mlflow-skinny>=2.22.0",
+  # 须与 docker compose ``ghcr.io/mlflow/mlflow:v${QLIB_MLFLOW_VERSION}`` 同主版本，否则 sqlite alembic 不兼容。
+  "mlflow-skinny>=3.13.0,<3.14.0",
   "filelock>=3.16.0",
   "redis",
   "dill",
