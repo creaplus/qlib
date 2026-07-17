@@ -191,7 +191,8 @@ class HIST(Model):
         stock2concept_matrix = np.load(self.stock2concept)
         x_train_values = x_train.values
         y_train_values = np.squeeze(y_train.values)
-        stock_index = stock_index.values
+        # pandas Series.values 在新版本为只读；需 copy 后再写 NaN 占位
+        stock_index = np.array(stock_index.values, copy=True)
         stock_index[np.isnan(stock_index)] = 733
         self.HIST_model.train()
 
@@ -216,7 +217,8 @@ class HIST(Model):
         stock2concept_matrix = np.load(self.stock2concept)
         x_values = data_x.values
         y_values = np.squeeze(data_y.values)
-        stock_index = stock_index.values
+        # pandas Series.values 在新版本为只读；需 copy 后再写 NaN 占位
+        stock_index = np.array(stock_index.values, copy=True)
         stock_index[np.isnan(stock_index)] = 733
         self.HIST_model.eval()
 
@@ -336,7 +338,8 @@ class HIST(Model):
         df_test = dataset.prepare(segment, col_set="feature", data_key=DataHandlerLP.DK_I)
         df_test["stock_index"] = 733
         df_test["stock_index"] = df_test.index.get_level_values("instrument").map(stock_index)
-        stock_index_test = df_test["stock_index"].values
+        # pandas Series.values 在新版本为只读；需 copy 后再写 NaN 占位
+        stock_index_test = np.array(df_test["stock_index"].values, copy=True)
         stock_index_test[np.isnan(stock_index_test)] = 733
         stock_index_test = stock_index_test.astype("int")
         df_test = df_test.drop(["stock_index"], axis=1)
