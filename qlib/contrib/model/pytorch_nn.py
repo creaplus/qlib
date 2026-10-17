@@ -10,13 +10,14 @@ import os
 import gc
 import numpy as np
 import pandas as pd
-from packaging import version
 from typing import Callable, Optional, Text, Union
 from sklearn.metrics import roc_auc_score, mean_squared_error
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from packaging.version import Version
+from packaging.version import Version
 
 from .pytorch_utils import count_parameters
 from ...model.base import Model
@@ -149,32 +150,25 @@ class DNNModelPytorch(Model):
         if scheduler == "default":
             # In torch version 2.7.0, the verbose parameter has been removed. Reference Link:
             # https://github.com/pytorch/pytorch/pull/147301/files#diff-036a7470d5307f13c9a6a51c3a65dd014f00ca02f476c545488cd856bea9bcf2L1313
-            if version.parse(str(torch.__version__).split("+", maxsplit=1)[0]) <= version.parse("2.6.0"):
-                # Reduce learning rate when loss has stopped decrease
-                self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(  # pylint: disable=E1123
-                    self.train_optimizer,
-                    mode="min",
-                    factor=0.5,
-                    patience=10,
-                    verbose=True,
-                    threshold=0.0001,
-                    threshold_mode="rel",
-                    cooldown=0,
-                    min_lr=0.00001,
-                    eps=1e-08,
-                )
-            else:
-                self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-                    self.train_optimizer,
-                    mode="min",
-                    factor=0.5,
-                    patience=10,
-                    threshold=0.0001,
-                    threshold_mode="rel",
-                    cooldown=0,
-                    min_lr=0.00001,
-                    eps=1e-08,
-                )
+            # packaging.Version：勿用字符串比版本（"2.13.0" <= "2.6.0" 在字串比较下会错）。
+            _torch_ver = Version(str(torch.__version__).split("+", maxsplit=1)[0])
+            _scheduler_kwargs = dict(
+                mode="min",
+                factor=0.5,
+                patience=10,
+                threshold=0.0001,
+                threshold_mode="rel",
+                cooldown=0,
+                min_lr=0.00001,
+                eps=1e-08,
+            )
+            if _torch_ver <= Version("2.6.0"):
+                _scheduler_kwargs["verbose"] = True
+            # Reduce learning rate when loss has stopped decrease
+            self.scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(  # pylint: disable=E1123
+                self.train_optimizer,
+                **_scheduler_kwargs,
+            )
         elif scheduler is None:
             self.scheduler = None
         else:
