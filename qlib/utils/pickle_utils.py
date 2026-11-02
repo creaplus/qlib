@@ -82,6 +82,22 @@ SAFE_PICKLE_CLASSES: Set[Tuple[str, str]] = {
     # Pandas reconstruction primitives used by Series/DataFrame pickles.
     # These entries are deliberately exact. I/O helpers such as
     # pandas.read_pickle must never be added here.
+    #
+    # Pandas 3 pickles the public aliases (module "pandas" / "pandas.arrays")
+    # instead of the pandas.core.* paths below. String index levels default to
+    # ArrowStringArray, which rebuilds through three pyarrow reconstructors
+    # (buffer + type alias + array data). Do not add other pyarrow entry points.
+    ("pandas", "DataFrame"),
+    ("pandas", "Series"),
+    ("pandas", "Index"),
+    ("pandas", "MultiIndex"),
+    ("pandas", "DatetimeIndex"),
+    ("pandas", "StringDtype"),
+    ("pandas.arrays", "DatetimeArray"),
+    ("pandas.arrays", "ArrowStringArray"),
+    ("pyarrow.lib", "_restore_array"),
+    ("pyarrow.lib", "type_for_alias"),
+    ("pyarrow.lib", "py_buffer"),
     ("pandas.core.series", "Series"),
     ("pandas.core.frame", "DataFrame"),
     ("pandas.core.internals.managers", "BlockManager"),
