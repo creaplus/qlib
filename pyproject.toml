@@ -122,10 +122,13 @@ client = [
 # InvalidDistribution: Invalid distribution metadata: unrecognized or malformed field 'license-file'
 # To solve this problem, we added license-files here. Refs: https://github.com/pypa/twine/issues/1216
 [tool.setuptools]
-packages = [
-  "qlib",
-]
 license-files = []
+
+# 显式 packages = ["qlib"] 不会带上子包。setuptools 会把 qlib.workflow 等目录
+# 判成「可导入但未列入 packages」并在构建时忽略。按目录发现，且只收有 __init__.py 的包。
+[tool.setuptools.packages.find]
+include = ["qlib*"]
+namespaces = false
 
 [project.scripts]
 qrun = "qlib.cli.run:run"

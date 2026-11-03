@@ -4,3 +4,5 @@ include qlib/*/*
 include qlib/*/*/*
 include qlib/*/*/*/*
 include qlib/*/*/*/*/*
+# __pycache__/*.pyc 会被上面的 include 收进清单，setuptools 再把该目录当成缺失的包报警。
+global-exclude *.py[cod]
