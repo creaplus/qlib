@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm", "cython", "numpy>=1.24.0"]
+requires = ["setuptools>=77", "setuptools-scm", "cython", "numpy>=1.24.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,7 +7,6 @@ classifiers = [
   "Operating System :: POSIX :: Linux",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: MacOS",
-  "License :: OSI Approved :: MIT License",
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
@@ -22,7 +21,12 @@ dynamic = ["version"]
 description = "A Quantitative-research Platform"
 requires-python = ">=3.8.0"
 readme = {file = "README.md", content-type = "text/markdown"}
-license = { text = "MIT" }
+license = "MIT"
+# 空列表：不把 LICENSE 写进元数据的 license-file。setuptools>=77 起这个字段放在 [project]。
+# 旧的 tool.setuptools.license-files 已弃用。背景：twine 曾报
+# InvalidDistribution: unrecognized or malformed field 'license-file'
+# https://github.com/pypa/twine/issues/1216
+license-files = []
 
 dependencies = [
   "pyyaml",
@@ -117,12 +121,6 @@ client = [
   "python-socketio<6",
   "tables",
 ]
-
-# In the process of releasing a new version, when checking the manylinux package with twine, an error is reported:
-# InvalidDistribution: Invalid distribution metadata: unrecognized or malformed field 'license-file'
-# To solve this problem, we added license-files here. Refs: https://github.com/pypa/twine/issues/1216
-[tool.setuptools]
-license-files = []
 
 # 显式 packages = ["qlib"] 不会带上子包。setuptools 会把 qlib.workflow 等目录
 # 判成「可导入但未列入 packages」并在构建时忽略。按目录发现，且只收有 __init__.py 的包。
